@@ -1,7 +1,7 @@
 ---
 title: "Getting Started: Diamonds"
-author: "(Your name here)"
-date: 2020-
+author: "Danny"
+date: 02/06/2025
 output:
   github_document:
     toc: true
@@ -59,34 +59,38 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
-ggplot(data =  diamonds) + geom_point(mapping = aes( 
+diamonds %>%
+  ggplot()+
+  geom_point(
+    mapping = aes( 
       x = carat,
-      y = price    
+      y = price 
     )
   )
 ```
 
 **Observations**:
 
--   As the carats get bigger they become more expensive, however as the carats get bigger the prices also start to vary more. There is also very defined lines every 0.5 addition to a carat.
+-   As the carats get bigger they become more expensive, however as the carats get bigger the prices also start to vary more. The data also tends to trend to having defined lines every 0.5 addition to a carat.
 
 ### **q2** Create a visualization showing variables `carat`, `price`, and `cut` simultaneously. Experiment with which variable you assign to which aesthetic (`x`, `y`, etc.) to find an effective visual.
 
 ```{r q2-task}
 ## TASK: Plot `price`, `carat`, and `cut` below
-diamonds %>% 
-  group_by(carat) %>% 
-  summarize(
-    price = mean(price),
-    n = cut
-  ) %>% 
-  ggplot() +
-  geom_point(aes(x = carat, y = price, color = n))
+ggplot(data = diamonds) +
+  geom_point(
+    aes(
+    x = carat,
+    y = price,
+    color = cut
+    )
+  )
+
 ```
 
 **Observations**:
 
--   The cuts are more spread out then I thought they would be. I didn't expect fair cuts to be on the more expensive and higher carat diamonds. It seems like while the cut may have some role in pricing, the more important thing is the carat. Additionally the diamonds are much more concentrated on the lower price range and become a lot more rare the bigger the carat and the higher the price, which makes sense.
+-   The cuts are more spread out then I thought they would be. I didn't expect fair cuts to be on the more expensive and higher carat diamonds. It seems like the cut doesn't have a strong effect on the pricing, the more important thing is the carat. Additionally the range of pricing for diamonds expands rapidly for diamonds higher then around 1 carat.
 
 # Communication
 
@@ -104,7 +108,7 @@ This will create a local `.md` file, and RStudio will automatically open a previ
 
 ### **q4** *Push* your knitted document to GitHub.
 
-![Terminal](./images/c00-unstaged.png)
+![![](images/clipboard-1486334410.png)Terminal](./images/c00-unstaged.png)
 
 You will need to stage both the `.md` file, as well as the `_files` folder. Note that the `_files` folder, when staged, will expand to include all the files under that directory.
 
