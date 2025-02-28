@@ -1,7 +1,7 @@
 RMS Titanic
 ================
 Danny Kennen
-2025-02/05
+2025-02/27
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -215,7 +215,7 @@ df_prop
 df_survived <- df_prop %>% filter(Survived == "Yes")
 df_survived %>% 
   ggplot() + 
-  geom_col(aes(x = Class, y = Prop, fill = Sex), position = "dodge")
+  geom_col(aes(x = Class, y = Prop, fill = Sex), color = "black", position = "dodge")
 ```
 
     ## Warning: Removed 2 rows containing missing values or values outside the scale range
@@ -238,9 +238,11 @@ df_survived %>%
     even.
 - Is there anything *fishy* going on in your plot?
   - It says that 100% of both women and men in 1st and 2nd class. This
-    probably has something to do with the survival rate of children in
-    first and second class and the fact their survival rates are lumped
-    together with the adults in this plot.
+    is due to the fact that the graph is overlaying the survival rates
+    for children and adults. When we add the argument color = “black” to
+    our geom_col argument we can see that the columns for adults and
+    children are stacked on top of each other which makes it appear that
+    all women and men survived in first and second class.
 
 ### **q5** Create a plot showing the group-proportion of occupants who *did* survive, along with aesthetics for `Class`, `Sex`, *and* `Age`. Document your observations below.
 
