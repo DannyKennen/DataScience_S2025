@@ -264,7 +264,7 @@ df_survived %>%
 **Observations**:
 
 - If you saw something *fishy* in q4 above, use your new plot to explain
-  the fishy-ness.
+  the fishyness.
   - When we filter out children, we can see that the rates for male
     survivors goes down on all classes except for crew. The survival
     rate for females also decreases in every class except for crew, but
