@@ -152,19 +152,19 @@ value for `names_to`.
 ## TASK: Tidy df_stang
 df_stang_long <-
   df_stang %>%
-    pivot_longer(
-      names_to = c("var","angle"),
-      names_sep = "_",
-      values_to = "val",
-      cols = starts_with("E") | starts_with("mu") | starts_with("nu"),
+  pivot_longer(
+    names_to = c("var","angle"),
+    names_sep = "_",
+    values_to = "val",
+    cols = starts_with("E") | starts_with("nu")
   )%>%
-  filter(val != -1) %>%
-    pivot_wider(
-      names_from = var,
-      values_from = val,
-    ) %>%
+  filter(val > 0) %>%
+  pivot_wider(
+    names_from = var,
+    values_from = val,
+  ) %>%
   mutate(angle = as.integer(angle))%>%
-  unnest(cols = c(E,nu))
+  unnest(cols = c(E, nu))
 ```
 
     ## Warning: Values from `val` are not uniquely identified; output will contain list-cols.
