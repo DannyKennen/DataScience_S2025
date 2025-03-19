@@ -156,8 +156,16 @@ glimpse(gapminder)
 
 ``` r
 ## TASK: Find the largest and smallest values of `year` in `gapminder`
-year_max <- max(gapminder %>% pull(year))
-year_min <- min(gapminder %>% pull(year))
+
+year_max <-
+  gapminder %>%
+  pull(year) %>%
+  max()
+
+year_min <-
+  gapminder %>%
+  pull(year) %>%
+  min()
 ```
 
 Use the following test to check your work.
@@ -212,6 +220,7 @@ gapminder_min_year <- gapminder %>%
 
 #plot
 ggplot(gapminder_min_year, aes(x = continent, y = gdpPercap)) +
+  scale_y_log10()+
   geom_violin(fill = "red") + 
   labs(title = "GDP per Capita in 1952") 
 ```
@@ -224,10 +233,13 @@ ggplot(gapminder_min_year, aes(x = continent, y = gdpPercap)) +
   to the other countries in Asia
 - Oceana has very litter variability among it’s countries, they all seem
   to have the same GPD
-- The Americas have a few pockets of outliers
-- Africa has one pocket of outliers that is fairly close to the rest of
-  the rest of the countries in Africa
-- Europe is a very smooth increase of GPS’s up to one point
+- The Americas has a few outliers but most countries stay within a
+  certain range.
+- Africa has more variability the other continents with pockets in
+  different gdp ranges.
+- Europe mostly is within a particular GDP range but it has a slight
+  outlier in above most of the other European countries, and a pretty
+  big outlier lower then the rest of the European countries.
 
 **Difficulties & Approaches**:
 
@@ -365,8 +377,9 @@ gapminder_filtered %>%
 **Observations**:
 
 - The GDP’s of countries in every continent have higher maxes and higher
-  minimums
-- The range of GDP’s also increased for each continent
+  minimums on 2007 than in 1952.
+- The range of GDP’s also increased for each continent in 2007 than in
+  1952
 - In 2007 there are fewer outliers then in 1952
 
 # Your Own EDA
@@ -425,20 +438,27 @@ gapminder_filtered %>%
 ``` r
 ## TASK: Your third graph
 
-ggplot(gapminder, aes(x = factor(year), y = pop, fill = continent)) +
-  geom_boxplot() +
+ggplot(gapminder, aes(x = year, y = pop, color = continent)) +
+  geom_smooth(se = FALSE, size = 1.5) +
+  scale_y_log10() +
   labs(
-    title = "Changes in Life Expectancy Distribution Over Time",
+    title = "Population Growth Over Time by Continent",
     x = "Year",
-    y = "Population",
-    fill = "Continent"
-  ) +
-  theme_minimal()
+    y = "Population (log scale)",
+    color = "Continent"
+  )
 ```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
+    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task3-1.png)<!-- -->
 
 - Populations have increase throughout time in every continent, although
-  Europe and Oceania haven’t changed as much as the other continents
-- Outlier countries are further then the rest of the countries in a
-  continent is 2007 then they were in 1952, they become more outlier-y
+  Europe hasn’t changed as much as the other continents, at least
+  according to the smoothed line plot
