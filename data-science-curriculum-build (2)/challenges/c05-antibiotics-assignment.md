@@ -1,7 +1,7 @@
 Antibiotics
 ================
 Danny Kennen
-2025-3-9
+2025-03-09
 
 *Purpose*: Creating effective data visualizations is an *iterative*
 process; very rarely will the first graph you make be the most
@@ -158,15 +158,22 @@ is Gram positive or negative.
 ``` r
 # WRITE YOUR CODE HERE
 df_long_antibio <- df_antibiotics %>%
-  pivot_longer(cols = c(penicillin, streptomycin, neomycin),
+  pivot_longer(
+    cols = c(penicillin, streptomycin, neomycin),
                names_to = "Antibiotic",
-               values_to = "Concentration_Value")
+               values_to = "Concentration_Value"
+    ) %>%
+  filter(Concentration_Value <= 0.1) %>%
+  mutate(bacteria = fct_reorder(bacteria, Concentration_Value)
+         )
 
-ggplot(df_long_antibio, aes(x = bacteria, y = Concentration_Value, fill = Antibiotic)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  facet_wrap(~ gram) +
-  scale_y_log10()+
-  theme(axis.text.x = element_text(angle = 90))
+all_bar_chart <- 
+   df_long_antibio %>%
+  ggplot(aes(Antibiotic, Concentration_Value, color = gram)) +
+  geom_point() +
+  facet_wrap(~bacteria) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+all_bar_chart
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.1-1.png)<!-- -->
@@ -205,12 +212,15 @@ your other visuals.
 df_long_pen <- df_antibiotics %>%
   pivot_longer(cols = c(penicillin),
                names_to = "Pen",
-               values_to = "Concentration_Value_pen")
+               values_to = "Concentration_Value_pen") %>%
+  filter(!is.na(Concentration_Value_pen)) %>%       
+  mutate(bacteria = droplevels(factor(bacteria))) 
 
 ggplot(df_long_pen, aes(x = bacteria, y = Concentration_Value_pen)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~ gram) +
   scale_y_log10()+
+  coord_flip()+
   theme(axis.text.x = element_text(angle = 90))
 ```
 
@@ -227,15 +237,11 @@ your other visuals.
 
 ``` r
 # WRITE YOUR CODE HERE
-df_long_pen_strep <- df_antibiotics %>%
-  pivot_longer(cols = c(penicillin, streptomycin),
-               names_to = "Antibiotic",
-               values_to = "Concentration_Value_pen_strep")
-
-ggplot(df_long_pen_strep, aes(x = bacteria, y = Concentration_Value_pen_strep, color = Antibiotic, group = Antibiotic)) +
-  geom_line() +
+ggplot(df_antibiotics, aes(penicillin, streptomycin, color = gram, label = bacteria)) +
+  geom_point() +
+  geom_text_repel(vjust = 1.75, size = 3.5) +
   scale_y_log10() +
-  theme(axis.text.x = element_text(angle = 90))
+  scale_x_log10()
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.4-1.png)<!-- -->
@@ -257,7 +263,8 @@ df_long_neo_strep <- df_antibiotics %>%
                values_to = "Concentration_Value_neo_strep")
 
 ggplot(df_long_neo_strep, aes(x = Antibiotic, y = bacteria, fill = log10(Concentration_Value_neo_strep))) +
-  geom_tile()
+  geom_tile() +
+  scale_fill_viridis_c(option = "plasma") 
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.5-1.png)<!-- -->
@@ -284,18 +291,20 @@ opportunity to think about why this is.**
 *Observations* - What is your response to the question above?
 
 - The penicillin has a high negative gram strain and low positive gram
-  strain. Streptomycin is a relatively even mix of negitive and positive
-  gram strains. Neomycin is low in concentration for both positive and
-  negative cases, save for a few cases.
+  strain, this means that penicillien is more effective against
+  Gram-Postitive bateria. Streptomycin is a relatively even mix of
+  negitive and positive gram strains. Neomycin is low in concentration
+  for both positive and negative cases, save for a few cases. Both
+  Streptomycin and Neoycin both work better on gram-negitive bacteria
 
 Which of your visuals above (1 through 5) is **most effective** at
 helping to answer this question?
 
-- Visual 1
+- Visual 3
 
 Why?
 
-- Visual 1 shows the relationships between the three antibiotics between
+- Visual 3 shows the relationships between the three antibiotics between
   each other, and the comparison of negative and positive gram strain
   cases.
 
@@ -312,10 +321,9 @@ and in 1984 *Streptococcus fecalis* was renamed *Enterococcus fecalis*
 
 - The prefix strepto means chain or twisted, ans diplo means double. The
   Streptococcus pneumoniae virus resembles a chain more then two
-  discernible strands. Additionally the streptomycin antibiotic has a
-  higher concentration then penicillin in D*iplococcus pneumoniae, so
-  the concentration of the antibiotic may have contributed to the name
-  change.*
+  discernible strands. Additionally Diplococcus bacteria reacts
+  similarly to the reactions of the *Streptococcus pneumoniae and
+  Streptococcus fecalis*
 
 Which of your visuals above (1 through 5) is **most effective** at
 helping to answer this question?
@@ -325,7 +333,7 @@ helping to answer this question?
 Why?
 
 - The 4th visual shows the concentration of streptomycin and its easy to
-  see the jump in concentration for diploccus pneumoniae
+  see the concentration for diploccus pneumoniae
 
 Worked with Amir Rosario
 
