@@ -25,7 +25,7 @@ Danny Kennen
       **at least three** visualizations of `VelocityVacuum` against
       these other factors. Are there other patterns in the data that
       might help explain the difference between Michelson’s estimate and
-      `LIGHTSPEED_VACUUM`?](#q5-you-have-access-to-a-few-other-variables-the-construct-a-at-least-three-visualizations-of-velocityvacuum-against-these-other-factors-are-there-other-patterns-in-the-data-that-might-help-explain-the-difference-between-michelsons-estimate-and-lightspeed_vacuum)
+      `LIGHTSPEED_VACUUM`](#q5-you-have-access-to-a-few-other-variables-the-construct-a-at-least-three-visualizations-of-velocityvacuum-against-these-other-factors-are-there-other-patterns-in-the-data-that-might-help-explain-the-difference-between-michelsons-estimate-and-lightspeed_vacuum)
   - [Bibliography](#bibliography)
 
 *Purpose*: When studying physical problems, there is an important
@@ -159,11 +159,19 @@ df_q1 %>%
 
 **Observations**:
 
-Why might your table differ from Michelson’s? - This table includes the
-decimal points where as the original chart contains whole numbers. For
-one, Michelson may have rounded numbers. Additionally, our data set says
-that Michelson’s value for the speed of light is 299944.00 but Michelson
-had an error of 51 km/s which may have added to the diffrence.
+The majority of the images have good distinctness, only 15 have poor
+distinctness. The poor distinctness images also have the most difference
+in my table compared to Michelson’s table, there is a difference of 2
+for the poor distinctness, whereas good and fair distinctness differ by
+1.7 and 1.5 respectively.
+
+*Why might your table differ from Michelson’s?*
+
+\- This table includes the decimal points where as the original chart
+contains whole numbers. For one, Michelson may have rounded numbers.
+Additionally, our data set says that Michelson’s value for the speed of
+light is 299944.00 but Michelson had an error of 51 km/s which may have
+added to the diffrence.
 
 The `Velocity` values in the dataset are the speed of light *in air*;
 Michelson introduced a couple of adjustments to estimate the speed of
@@ -338,77 +346,64 @@ df_q2 %>%
 peaks in the data and both graphs have more data located in the 300000
 to 299900 range.
 
-Differences - Despiet the peaks and valleys being located in similar
-spaces, the simulated graph appears to be more “subdued” in general. The
-simulated graph also appears to spread data points out further then the
-real graph.
+Differences - Despite the peaks and valleys being located in similar
+spaces, the simulated graph appears to be more “subdued” in general.
+While the numper of points ar the same and the location of the peaks are
+similarly located on the x-axis, the hight of the peaks are lowered and
+slopes are more relaxed. The simulated graph also appears to spread data
+points out further then the real graph.
 
-### **q5** You have access to a few other variables. the Construct a **at least three** visualizations of `VelocityVacuum` against these other factors. Are there other patterns in the data that might help explain the difference between Michelson’s estimate and `LIGHTSPEED_VACUUM`?
+### **q5** You have access to a few other variables. the Construct a **at least three** visualizations of `VelocityVacuum` against these other factors. Are there other patterns in the data that might help explain the difference between Michelson’s estimate and `LIGHTSPEED_VACUUM`
 
 ``` r
-v_mean <-
-  df_q2 %>%
-  summarize(m = mean(VelocityVacuum)) %>%
-  pull(m)
-v_sd <-
-  df_q2 %>%
-  summarize(s = sd(VelocityVacuum)) %>%
-  pull(s)
-
-## Visualize
-set.seed(101)
-df_q2 %>%
-  mutate(Simulated = rnorm(n(), mean = v_mean, sd = v_sd)) %>%
-  rename(Real = VelocityVacuum) %>%
-  pivot_longer(
-    cols = c(Simulated, Real),
-    names_to = "source",
-    values_to = "velocity"
-  ) %>%
-
-  ggplot(aes(Date, velocity)) +
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON,
-    linetype = "dotted"
-  ) +
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON - LIGHTSPEED_PM,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = LIGHTSPEED_MICHELSON + LIGHTSPEED_PM,
-    linetype = "dashed"
-  ) +
-
-  geom_line(
-    data = . %>%
-      group_by(Date, source) %>%
-      summarize(velocity_mean = mean(velocity)),
-    mapping = aes(y = velocity_mean),
-    color = "grey50"
-  ) +
-  geom_point(
-    mapping = aes(y = velocity),
-    size = 0.8
-  ) +
-
-  facet_grid(source~.) +
-  theme_minimal() +
-  labs(
-    x = "Date of Measurement (1879)",
-    y = "Velocity (in Vacuum)"
-  )
+# Velocity vs Temp
+ggplot(df_q2, aes(x = Temp, y = VelocityVacuum)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "1. Velocity vs Temperature",
+       x = "Temperature (F)",
+       y = "Velocity (km/s)")
 ```
-
-    ## `summarise()` has grouped output by 'Date'. You can override using the
-    ## `.groups` argument.
 
 ![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
+``` r
+#Velocity vs Distinctness
+ggplot(df_q2, aes(x = Distinctness, y = VelocityVacuum, fill = Distinctness)) +
+  geom_boxplot() +
+  labs(title = "2. Velocity vs Image Distinctness",
+       x = "Distinctness (1 = Poor, 3 = Good)",
+       y = "Velocity (km/s)")
+```
+
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
+#Velocity vs Time 
+ggplot(df_q2, aes(x = Date, y = VelocityVacuum)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "3. Velocity vs Time",
+       x = "Date",
+       y = "Velocity (km/s)")
+```
+
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
 **Observations**:
 
-- I don’t know, I didn’t have time to go to office hours this week, I’m
-  gonna resubmit this later
+- In visual 1 we can see that there is a pretty wide range in
+  temperatures across velocities, but there is a slight trend towards
+  warmer temperatures having higher velocities, so the temperature when
+  Michelson took his measurements might have reflected this.
+- In visual 2, we can see that images with poor distinctness have a
+  tendency to have lower velocities compared to good or fair images, the
+  median is lower as well as the overall range.
+- in visual 3, its very scattered and perhaps i should have added a
+  geom_line to help distinguish a trend, but it seems like the later in
+  the year month the lower the velocity measurements tend to be lower.
+  This might correspond to temperature.
+- It seems like there are environmental conditions that probably
+  affected Michelson’s values, temperature and image quality can skew
+  the velocities recorded.
 
 ## Bibliography
 
