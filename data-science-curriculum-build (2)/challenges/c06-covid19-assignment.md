@@ -1,48 +1,56 @@
-COVID-19
-================
-Danny Kennen
-2025-03-12
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
 
-- [Grading Rubric](#grading-rubric)
-  - [Individual](#individual)
-  - [Submission](#submission)
-- [The Big Picture](#the-big-picture)
-- [Get the Data](#get-the-data)
-  - [Navigating the Census Bureau](#navigating-the-census-bureau)
-    - [**q1** Load Table `B01003` into the following tibble. Make sure
-      the column names are
-      `id, Geographic Area Name, Estimate!!Total, Margin of Error!!Total`.](#q1-load-table-b01003-into-the-following-tibble-make-sure-the-column-names-are-id-geographic-area-name-estimatetotal-margin-of-errortotal)
-  - [Automated Download of NYT Data](#automated-download-of-nyt-data)
-    - [**q2** Visit the NYT GitHub repo and find the URL for the **raw**
-      US County-level data. Assign that URL as a string to the variable
-      below.](#q2-visit-the-nyt-github-repo-and-find-the-url-for-the-raw-us-county-level-data-assign-that-url-as-a-string-to-the-variable-below)
-- [Join the Data](#join-the-data)
-  - [**q3** Process the `id` column of `df_pop` to create a `fips`
-    column.](#q3-process-the-id-column-of-df_pop-to-create-a-fips-column)
-  - [**q4** Join `df_covid` with `df_q3` by the `fips` column. Use the
-    proper type of join to preserve *only* the rows in
-    `df_covid`.](#q4-join-df_covid-with-df_q3-by-the-fips-column-use-the-proper-type-of-join-to-preserve-only-the-rows-in-df_covid)
-- [Analyze](#analyze)
-  - [Normalize](#normalize)
-    - [**q5** Use the `population` estimates in `df_data` to normalize
-      `cases` and `deaths` to produce per 100,000 counts \[3\]. Store
-      these values in the columns `cases_per100k` and
-      `deaths_per100k`.](#q5-use-the-population-estimates-in-df_data-to-normalize-cases-and-deaths-to-produce-per-100000-counts-3-store-these-values-in-the-columns-cases_per100k-and-deaths_per100k)
-  - [Guided EDA](#guided-eda)
-    - [**q6** Compute some summaries](#q6-compute-some-summaries)
-    - [**q7** Find and compare the top
-      10](#q7-find-and-compare-the-top-10)
-  - [Self-directed EDA](#self-directed-eda)
-    - [**q8** Drive your own ship: You’ve just put together a very rich
-      dataset; you now get to explore! Pick your own direction and
-      generate at least one punchline figure to document an interesting
-      finding. I give a couple tips & ideas
-      below:](#q8-drive-your-own-ship-youve-just-put-together-a-very-rich-dataset-you-now-get-to-explore-pick-your-own-direction-and-generate-at-least-one-punchline-figure-to-document-an-interesting-finding-i-give-a-couple-tips--ideas-below)
-    - [Ideas](#ideas)
-    - [Aside: Some visualization
-      tricks](#aside-some-visualization-tricks)
-    - [Geographic exceptions](#geographic-exceptions)
-- [Notes](#notes)
+# COVID-19
+
+Danny Kennen 2025-03-12
+
+-   [Grading Rubric](#grading-rubric)
+    -   [Individual](#individual)
+    -   [Submission](#submission)
+-   [The Big Picture](#the-big-picture)
+-   [Get the Data](#get-the-data)
+    -   [Navigating the Census Bureau](#navigating-the-census-bureau)
+        -   [**q1** Load Table `B01003` into the following tibble. Make
+            sure the column names are
+            `id, Geographic Area Name, Estimate!!Total, Margin of Error!!Total`.](#q1-load-table-b01003-into-the-following-tibble-make-sure-the-column-names-are-id-geographic-area-name-estimatetotal-margin-of-errortotal)
+    -   [Automated Download of NYT
+        Data](#automated-download-of-nyt-data)
+        -   [**q2** Visit the NYT GitHub repo and find the URL for the
+            **raw** US County-level data. Assign that URL as a string to
+            the variable
+            below.](#q2-visit-the-nyt-github-repo-and-find-the-url-for-the-raw-us-county-level-data-assign-that-url-as-a-string-to-the-variable-below)
+-   [Join the Data](#join-the-data)
+    -   [**q3** Process the `id` column of `df_pop` to create a `fips`
+        column.](#q3-process-the-id-column-of-df_pop-to-create-a-fips-column)
+    -   [**q4** Join `df_covid` with `df_q3` by the `fips` column. Use
+        the proper type of join to preserve *only* the rows in
+        `df_covid`.](#q4-join-df_covid-with-df_q3-by-the-fips-column-use-the-proper-type-of-join-to-preserve-only-the-rows-in-df_covid)
+-   [Analyze](#analyze)
+    -   [Normalize](#normalize)
+        -   [**q5** Use the `population` estimates in `df_data` to
+            normalize `cases` and `deaths` to produce per 100,000 counts
+            $$3$$. Store these values in the columns `cases_per100k` and
+            `deaths_per100k`.](#q5-use-the-population-estimates-in-df_data-to-normalize-cases-and-deaths-to-produce-per-100000-counts-3-store-these-values-in-the-columns-cases_per100k-and-deaths_per100k)
+    -   [Guided EDA](#guided-eda)
+        -   [**q6** Compute some summaries](#q6-compute-some-summaries)
+        -   [**q7** Find and compare the top
+            10](#q7-find-and-compare-the-top-10)
+    -   [Self-directed EDA](#self-directed-eda)
+        -   [**q8** Drive your own ship: You’ve just put together a very
+            rich dataset; you now get to explore! Pick your own
+            direction and generate at least one punchline figure to
+            document an interesting finding. I give a couple tips &
+            ideas
+            below:](#q8-drive-your-own-ship-youve-just-put-together-a-very-rich-dataset-you-now-get-to-explore-pick-your-own-direction-and-generate-at-least-one-punchline-figure-to-document-an-interesting-finding-i-give-a-couple-tips--ideas-below)
+        -   [Ideas](#ideas)
+        -   [Aside: Some visualization
+            tricks](#aside-some-visualization-tricks)
+        -   [Geographic exceptions](#geographic-exceptions)
+-   [Notes](#notes)
 
 *Purpose*: In this challenge, you’ll learn how to navigate the U.S.
 Census Bureau website, programmatically download data from the internet,
@@ -52,14 +60,14 @@ investigation of COVID-19, which we’ll build upon for Project 1.
 
 <!-- include-rubric -->
 
-# Grading Rubric
+# Grading Rubric {#grading-rubric}
 
 <!-- -------------------------------------------------- -->
 
 Unlike exercises, **challenges will be graded**. The following rubrics
 define how you will be graded, both on an individual and team basis.
 
-## Individual
+## Individual {#individual}
 
 <!-- ------------------------- -->
 
@@ -72,7 +80,7 @@ define how you will be graded, both on an individual and team basis.
 | Specified | Uses the phrase “more data are necessary” without clarification | Any statement that “more data are necessary” specifies which *specific* data are needed to answer what *specific* question |
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability | Code sufficiently close to the [style guide](https://style.tidyverse.org/) |
 
-## Submission
+## Submission {#submission}
 
 <!-- ------------------------- -->
 
@@ -85,16 +93,18 @@ all files uploaded to GitHub.**
 library(tidyverse)
 ```
 
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.2     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```         
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```
 
 *Background*:
 [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is
@@ -108,7 +118,7 @@ these data in this challenge.
 piece](https://www.propublica.org/article/how-to-understand-covid-19-numbers)
 on “How to understand COVID-19 numbers” to be very informative!
 
-# The Big Picture
+# The Big Picture {#the-big-picture}
 
 <!-- -------------------------------------------------- -->
 
@@ -124,19 +134,19 @@ estimates in order to compute infection rates (think back to the
 
 That’s the high-level view; now let’s dig into the details.
 
-# Get the Data
+# Get the Data {#get-the-data}
 
 <!-- -------------------------------------------------- -->
 
 1.  County-level population estimates (Census Bureau)
 2.  County-level COVID-19 counts (New York Times)
 
-## Navigating the Census Bureau
+## Navigating the Census Bureau {#navigating-the-census-bureau}
 
 <!-- ------------------------- -->
 
 **Steps**: Our objective is to find the 2018 American Community
-Survey\[1\] (ACS) Total Population estimates, disaggregated by counties.
+Survey$$1$$ (ACS) Total Population estimates, disaggregated by counties.
 To check your results, this is Table `B01003`.
 
 1.  Go to [data.census.gov](data.census.gov).
@@ -144,20 +154,20 @@ To check your results, this is Table `B01003`.
 3.  Apply filters to find the ACS **Total Population** estimates,
     disaggregated by counties. I used the filters:
 
-- `Topics > Populations and People > Counts, Estimates, and Projections > Population Total`
-- `Geography > County > All counties in United States`
+-   `Topics > Populations and People > Counts, Estimates, and Projections > Population Total`
+-   `Geography > County > All counties in United States`
 
 5.  Select the **Total Population** table and click the `Download`
     button to download the data; make sure to select the 2018 5-year
     estimates.
 6.  Unzip and move the data to your `challenges/data` folder.
 
-- Note that the data will have a crazy-long filename like
-  `ACSDT5Y2018.B01003_data_with_overlays_2020-07-26T094857.csv`. That’s
-  because metadata is stored in the filename, such as the year of the
-  estimate (`Y2018`) and my access date (`2020-07-26`). **Your filename
-  will vary based on when you download the data**, so make sure to copy
-  the filename that corresponds to what you downloaded!
+-   Note that the data will have a crazy-long filename like
+    `ACSDT5Y2018.B01003_data_with_overlays_2020-07-26T094857.csv`.
+    That’s because metadata is stored in the filename, such as the year
+    of the estimate (`Y2018`) and my access date (`2020-07-26`). **Your
+    filename will vary based on when you download the data**, so make
+    sure to copy the filename that corresponds to what you downloaded!
 
 ### **q1** Load Table `B01003` into the following tibble. Make sure the column names are `id, Geographic Area Name, Estimate!!Total, Margin of Error!!Total`.
 
@@ -176,32 +186,36 @@ df_pop <- read_csv(pop, skip = 2,
                                  "Margin of Error!!Total"))
 ```
 
-    ## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-    ## e.g.:
-    ##   dat <- vroom(...)
-    ##   problems(dat)
+```         
+## Warning: One or more parsing issues, call `problems()` on your data frame for details,
+## e.g.:
+##   dat <- vroom(...)
+##   problems(dat)
+```
 
 ``` r
 head(df_pop)
 ```
 
-    ## # A tibble: 6 × 4
-    ##   id             `Geographic Area Name` `Estimate!!Total` Margin of Error!!Tot…¹
-    ##   <chr>          <chr>                              <dbl>                  <dbl>
-    ## 1 0500000US01001 Autauga County, Alaba…             55200                     NA
-    ## 2 0500000US01003 Baldwin County, Alaba…            208107                     NA
-    ## 3 0500000US01005 Barbour County, Alaba…             25782                     NA
-    ## 4 0500000US01007 Bibb County, Alabama               22527                     NA
-    ## 5 0500000US01009 Blount County, Alabama             57645                     NA
-    ## 6 0500000US01011 Bullock County, Alaba…             10352                     NA
-    ## # ℹ abbreviated name: ¹​`Margin of Error!!Total`
+```         
+## # A tibble: 6 × 4
+##   id             `Geographic Area Name` `Estimate!!Total` Margin of Error!!Tot…¹
+##   <chr>          <chr>                              <dbl>                  <dbl>
+## 1 0500000US01001 Autauga County, Alaba…             55200                     NA
+## 2 0500000US01003 Baldwin County, Alaba…            208107                     NA
+## 3 0500000US01005 Barbour County, Alaba…             25782                     NA
+## 4 0500000US01007 Bibb County, Alabama               22527                     NA
+## 5 0500000US01009 Blount County, Alabama             57645                     NA
+## 6 0500000US01011 Bullock County, Alaba…             10352                     NA
+## # ℹ abbreviated name: ¹​`Margin of Error!!Total`
+```
 
 *Note*: You can find information on 1-year, 3-year, and 5-year estimates
 [here](https://www.census.gov/programs-surveys/acs/guidance/estimates.html).
 The punchline is that 5-year estimates are more reliable but less
 current.
 
-## Automated Download of NYT Data
+## Automated Download of NYT Data {#automated-download-of-nyt-data}
 
 <!-- ------------------------- -->
 
@@ -239,15 +253,17 @@ curl::curl_download(
 df_covid <- read_csv(filename_nyt)
 ```
 
-    ## Rows: 2502832 Columns: 6
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr  (3): county, state, fips
-    ## dbl  (2): cases, deaths
-    ## date (1): date
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```         
+## Rows: 2502832 Columns: 6
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr  (3): county, state, fips
+## dbl  (2): cases, deaths
+## date (1): date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
 
 You can now re-run the chunk above (or the entire notebook) to pull the
 most recent version of the data. Thus you can periodically re-run this
@@ -256,7 +272,7 @@ notebook to check in on the pandemic as it evolves.
 *Note*: You should feel free to copy-paste the code above for your own
 future projects!
 
-# Join the Data
+# Join the Data {#join-the-data}
 
 <!-- -------------------------------------------------- -->
 
@@ -268,28 +284,32 @@ sources.
 df_pop %>% glimpse
 ```
 
-    ## Rows: 3,220
-    ## Columns: 4
-    ## $ id                       <chr> "0500000US01001", "0500000US01003", "0500000U…
-    ## $ `Geographic Area Name`   <chr> "Autauga County, Alabama", "Baldwin County, A…
-    ## $ `Estimate!!Total`        <dbl> 55200, 208107, 25782, 22527, 57645, 10352, 20…
-    ## $ `Margin of Error!!Total` <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+```         
+## Rows: 3,220
+## Columns: 4
+## $ id                       <chr> "0500000US01001", "0500000US01003", "0500000U…
+## $ `Geographic Area Name`   <chr> "Autauga County, Alabama", "Baldwin County, A…
+## $ `Estimate!!Total`        <dbl> 55200, 208107, 25782, 22527, 57645, 10352, 20…
+## $ `Margin of Error!!Total` <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+```
 
 ``` r
 df_covid %>% glimpse
 ```
 
-    ## Rows: 2,502,832
-    ## Columns: 6
-    ## $ date   <date> 2020-01-21, 2020-01-22, 2020-01-23, 2020-01-24, 2020-01-24, 20…
-    ## $ county <chr> "Snohomish", "Snohomish", "Snohomish", "Cook", "Snohomish", "Or…
-    ## $ state  <chr> "Washington", "Washington", "Washington", "Illinois", "Washingt…
-    ## $ fips   <chr> "53061", "53061", "53061", "17031", "53061", "06059", "17031", …
-    ## $ cases  <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-    ## $ deaths <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+```         
+## Rows: 2,502,832
+## Columns: 6
+## $ date   <date> 2020-01-21, 2020-01-22, 2020-01-23, 2020-01-24, 2020-01-24, 20…
+## $ county <chr> "Snohomish", "Snohomish", "Snohomish", "Cook", "Snohomish", "Or…
+## $ state  <chr> "Washington", "Washington", "Washington", "Illinois", "Washingt…
+## $ fips   <chr> "53061", "53061", "53061", "17031", "53061", "06059", "17031", …
+## $ cases  <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ deaths <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+```
 
 To join these datasets, we’ll need to use [FIPS county
-codes](https://en.wikipedia.org/wiki/FIPS_county_code).\[2\] The last
+codes](https://en.wikipedia.org/wiki/FIPS_county_code).$$2$$ The last
 `5` digits of the `id` column in `df_pop` is the FIPS county code, while
 the NYT data `df_covid` already contains the `fips`.
 
@@ -305,21 +325,23 @@ df_q3 <-
 df_q3
 ```
 
-    ## # A tibble: 3,220 × 5
-    ##    id      `Geographic Area Name` `Estimate!!Total` Margin of Error!!Tot…¹ fips 
-    ##    <chr>   <chr>                              <dbl>                  <dbl> <chr>
-    ##  1 050000… Autauga County, Alaba…             55200                     NA 01001
-    ##  2 050000… Baldwin County, Alaba…            208107                     NA 01003
-    ##  3 050000… Barbour County, Alaba…             25782                     NA 01005
-    ##  4 050000… Bibb County, Alabama               22527                     NA 01007
-    ##  5 050000… Blount County, Alabama             57645                     NA 01009
-    ##  6 050000… Bullock County, Alaba…             10352                     NA 01011
-    ##  7 050000… Butler County, Alabama             20025                     NA 01013
-    ##  8 050000… Calhoun County, Alaba…            115098                     NA 01015
-    ##  9 050000… Chambers County, Alab…             33826                     NA 01017
-    ## 10 050000… Cherokee County, Alab…             25853                     NA 01019
-    ## # ℹ 3,210 more rows
-    ## # ℹ abbreviated name: ¹​`Margin of Error!!Total`
+```         
+## # A tibble: 3,220 × 5
+##    id      `Geographic Area Name` `Estimate!!Total` Margin of Error!!Tot…¹ fips 
+##    <chr>   <chr>                              <dbl>                  <dbl> <chr>
+##  1 050000… Autauga County, Alaba…             55200                     NA 01001
+##  2 050000… Baldwin County, Alaba…            208107                     NA 01003
+##  3 050000… Barbour County, Alaba…             25782                     NA 01005
+##  4 050000… Bibb County, Alabama               22527                     NA 01007
+##  5 050000… Blount County, Alabama             57645                     NA 01009
+##  6 050000… Bullock County, Alaba…             10352                     NA 01011
+##  7 050000… Butler County, Alabama             20025                     NA 01013
+##  8 050000… Calhoun County, Alaba…            115098                     NA 01015
+##  9 050000… Chambers County, Alab…             33826                     NA 01017
+## 10 050000… Cherokee County, Alab…             25853                     NA 01019
+## # ℹ 3,210 more rows
+## # ℹ abbreviated name: ¹​`Margin of Error!!Total`
+```
 
 Use the following test to check your answer.
 
@@ -333,13 +355,17 @@ assertthat::assert_that(
             )
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 print("Very good!")
 ```
 
-    ## [1] "Very good!"
+```         
+## [1] "Very good!"
+```
 
 ### **q4** Join `df_covid` with `df_q3` by the `fips` column. Use the proper type of join to preserve *only* the rows in `df_covid`.
 
@@ -364,7 +390,9 @@ if (!any(df_q4 %>% pull(fips) %>% str_detect(., "02105"), na.rm = TRUE)) {
 }
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 if (any(df_q4 %>% pull(fips) %>% str_detect(., "78010"), na.rm = TRUE)) {
@@ -379,13 +407,17 @@ if (any(df_q4 %>% pull(fips) %>% str_detect(., "78010"), na.rm = TRUE)) {
 }
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 print("Very good!")
 ```
 
-    ## [1] "Very good!"
+```         
+## [1] "Very good!"
+```
 
 For convenience, I down-select some columns and produce more convenient
 column names.
@@ -405,7 +437,7 @@ df_data <-
   )
 ```
 
-# Analyze
+# Analyze {#analyze}
 
 <!-- -------------------------------------------------- -->
 
@@ -414,11 +446,11 @@ can finally start our analysis. Our first step will be to produce county
 population-normalized cases and death counts. Then we will explore the
 data.
 
-## Normalize
+## Normalize {#normalize}
 
 <!-- ------------------------- -->
 
-### **q5** Use the `population` estimates in `df_data` to normalize `cases` and `deaths` to produce per 100,000 counts \[3\]. Store these values in the columns `cases_per100k` and `deaths_per100k`.
+### **q5** Use the `population` estimates in `df_data` to normalize `cases` and `deaths` to produce per 100,000 counts $$3$$. Store these values in the columns `cases_per100k` and `deaths_per100k`.
 
 ``` r
 ## TASK: Normalize cases and deaths
@@ -432,21 +464,23 @@ df_normalized <-
 df_normalized
 ```
 
-    ## # A tibble: 2,474,010 × 9
-    ##    date       county      state      fips  cases deaths population cases_per100k
-    ##    <date>     <chr>       <chr>      <chr> <dbl>  <dbl>      <dbl>         <dbl>
-    ##  1 2020-01-21 Snohomish   Washington 53061     1      0     786620       0.127  
-    ##  2 2020-01-22 Snohomish   Washington 53061     1      0     786620       0.127  
-    ##  3 2020-01-23 Snohomish   Washington 53061     1      0     786620       0.127  
-    ##  4 2020-01-24 Cook        Illinois   17031     1      0    5223719       0.0191 
-    ##  5 2020-01-24 Snohomish   Washington 53061     1      0     786620       0.127  
-    ##  6 2020-01-25 Orange      California 06059     1      0    3164182       0.0316 
-    ##  7 2020-01-25 Cook        Illinois   17031     1      0    5223719       0.0191 
-    ##  8 2020-01-25 Snohomish   Washington 53061     1      0     786620       0.127  
-    ##  9 2020-01-26 Maricopa    Arizona    04013     1      0    4253913       0.0235 
-    ## 10 2020-01-26 Los Angeles California 06037     1      0   10098052       0.00990
-    ## # ℹ 2,474,000 more rows
-    ## # ℹ 1 more variable: deaths_per100k <dbl>
+```         
+## # A tibble: 2,474,010 × 9
+##    date       county      state      fips  cases deaths population cases_per100k
+##    <date>     <chr>       <chr>      <chr> <dbl>  <dbl>      <dbl>         <dbl>
+##  1 2020-01-21 Snohomish   Washington 53061     1      0     786620       0.127  
+##  2 2020-01-22 Snohomish   Washington 53061     1      0     786620       0.127  
+##  3 2020-01-23 Snohomish   Washington 53061     1      0     786620       0.127  
+##  4 2020-01-24 Cook        Illinois   17031     1      0    5223719       0.0191 
+##  5 2020-01-24 Snohomish   Washington 53061     1      0     786620       0.127  
+##  6 2020-01-25 Orange      California 06059     1      0    3164182       0.0316 
+##  7 2020-01-25 Cook        Illinois   17031     1      0    5223719       0.0191 
+##  8 2020-01-25 Snohomish   Washington 53061     1      0     786620       0.127  
+##  9 2020-01-26 Maricopa    Arizona    04013     1      0    4253913       0.0235 
+## 10 2020-01-26 Los Angeles California 06037     1      0   10098052       0.00990
+## # ℹ 2,474,000 more rows
+## # ℹ 1 more variable: deaths_per100k <dbl>
+```
 
 You may use the following test to check your work.
 
@@ -465,7 +499,9 @@ if (any(df_normalized %>% pull(date) %>% str_detect(., "2020-01-21"))) {
 }
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 if (any(df_normalized %>% pull(date) %>% str_detect(., "2022-05-13"))) {
@@ -480,38 +516,50 @@ if (any(df_normalized %>% pull(date) %>% str_detect(., "2022-05-13"))) {
 }
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 ## Check datatypes
 assertthat::assert_that(is.numeric(df_normalized$cases))
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(is.numeric(df_normalized$deaths))
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(is.numeric(df_normalized$population))
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(is.numeric(df_normalized$cases_per100k))
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(is.numeric(df_normalized$deaths_per100k))
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 ## Check that normalization is correct
@@ -525,7 +573,9 @@ assertthat::assert_that(
             )
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 assertthat::assert_that(
@@ -538,21 +588,25 @@ assertthat::assert_that(
             )
 ```
 
-    ## [1] TRUE
+```         
+## [1] TRUE
+```
 
 ``` r
 print("Excellent!")
 ```
 
-    ## [1] "Excellent!"
+```         
+## [1] "Excellent!"
+```
 
-## Guided EDA
+## Guided EDA {#guided-eda}
 
 <!-- ------------------------- -->
 
 Before turning you loose, let’s complete a couple guided EDA tasks.
 
-### **q6** Compute some summaries
+### **q6** Compute some summaries {#q6-compute-some-summaries}
 
 Compute the mean and standard deviation for `cases_per100k` and
 `deaths_per100k`. *Make sure to carefully choose **which rows** to
@@ -569,20 +623,22 @@ df_normalized %>%
     )
 ```
 
-    ## # A tibble: 1 × 1
-    ##   count_summarized
-    ##              <int>
-    ## 1             3211
+```         
+## # A tibble: 1 × 1
+##   count_summarized
+##              <int>
+## 1             3211
+```
 
-- Which rows did you pick?
-  - It is a summary of the Covid-19 cases in counties with no recorded
-    population value
-- Why?
-  - This data set cause errors for other data set options because these
-    counties have no population counties, and some of the counties are
-    unknown. I wanted to isolate this data set.
+-   Which rows did you pick?
+    -   It is a summary of the Covid-19 cases in counties with no
+        recorded population value
+-   Why?
+    -   This data set cause errors for other data set options because
+        these counties have no population counties, and some of the
+        counties are unknown. I wanted to isolate this data set.
 
-### **q7** Find and compare the top 10
+### **q7** Find and compare the top 10 {#q7-find-and-compare-the-top-10}
 
 Find the top 10 counties in terms of `cases_per100k`, and the top 10 in
 terms of `deaths_per100k`. Report the population of each county along
@@ -601,19 +657,21 @@ df_top10_cases <-
 df_top10_cases
 ```
 
-    ## # A tibble: 10 × 5
-    ##    county                   state        population cases_per100k deaths_per100k
-    ##    <chr>                    <chr>             <dbl>         <dbl>          <dbl>
-    ##  1 Loving                   Texas               102       192157.          980. 
-    ##  2 Chattahoochee            Georgia           10767        69527.          204. 
-    ##  3 Nome Census Area         Alaska             9925        62922.           50.4
-    ##  4 Northwest Arctic Borough Alaska             7734        62542.          168. 
-    ##  5 Crowley                  Colorado           5630        59449.          533. 
-    ##  6 Bethel Census Area       Alaska            18040        57439.          227. 
-    ##  7 Dewey                    South Dakota       5779        54317.          761. 
-    ##  8 Dimmit                   Texas             10663        54019.          478. 
-    ##  9 Jim Hogg                 Texas              5282        50133.          417. 
-    ## 10 Kusilvak Census Area     Alaska             8198        49817.          171.
+```         
+## # A tibble: 10 × 5
+##    county                   state        population cases_per100k deaths_per100k
+##    <chr>                    <chr>             <dbl>         <dbl>          <dbl>
+##  1 Loving                   Texas               102       192157.          980. 
+##  2 Chattahoochee            Georgia           10767        69527.          204. 
+##  3 Nome Census Area         Alaska             9925        62922.           50.4
+##  4 Northwest Arctic Borough Alaska             7734        62542.          168. 
+##  5 Crowley                  Colorado           5630        59449.          533. 
+##  6 Bethel Census Area       Alaska            18040        57439.          227. 
+##  7 Dewey                    South Dakota       5779        54317.          761. 
+##  8 Dimmit                   Texas             10663        54019.          478. 
+##  9 Jim Hogg                 Texas              5282        50133.          417. 
+## 10 Kusilvak Census Area     Alaska             8198        49817.          171.
+```
 
 ``` r
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
@@ -627,55 +685,57 @@ df_top10_deaths <-
 df_top10_deaths
 ```
 
-    ## # A tibble: 10 × 5
-    ##    county            state         population cases_per100k deaths_per100k
-    ##    <chr>             <chr>              <dbl>         <dbl>          <dbl>
-    ##  1 McMullen          Texas                662        25529.          1360.
-    ##  2 Galax city        Virginia            6638        38581.          1175.
-    ##  3 Motley            Texas               1156        24740.          1125.
-    ##  4 Hancock           West Virginia      75690        30721.          1054.
-    ##  5 Emporia city      Virginia            5381        22059.          1022.
-    ##  6 Towns             Georgia            11417        21021.          1016.
-    ##  7 Jerauld           South Dakota        2029        20453.           986.
-    ##  8 Loving            Texas                102       192157.           980.
-    ##  9 Robertson         Texas              69344        31358.           980.
-    ## 10 Martinsville city Virginia           13101        26548.           946.
+```         
+## # A tibble: 10 × 5
+##    county            state         population cases_per100k deaths_per100k
+##    <chr>             <chr>              <dbl>         <dbl>          <dbl>
+##  1 McMullen          Texas                662        25529.          1360.
+##  2 Galax city        Virginia            6638        38581.          1175.
+##  3 Motley            Texas               1156        24740.          1125.
+##  4 Hancock           West Virginia      75690        30721.          1054.
+##  5 Emporia city      Virginia            5381        22059.          1022.
+##  6 Towns             Georgia            11417        21021.          1016.
+##  7 Jerauld           South Dakota        2029        20453.           986.
+##  8 Loving            Texas                102       192157.           980.
+##  9 Robertson         Texas              69344        31358.           980.
+## 10 Martinsville city Virginia           13101        26548.           946.
+```
 
 **Observations**:
 
-- Texas and Alaska are the 2 main states for the top 10 ten cases. Texas
-  shows up again repeatedly for the top ten counties with deaths,
-  especially Loving. Loving probably shows up in both because it’s
-  population is so small any cases and deaths have carry a bigger
-  percentage of the population then other counties.
-- Between both cases, the largest population is 75,690 in Hancock, VA.
-  The majority of the other places are under 20K and all of them are
-  under 100K, these are all relatively small places
-- When did these “largest values” occur?
-  - Loving, Texas shows up in both the cases and deaths set as an
-    outlier.
+-   Texas and Alaska are the 2 main states for the top 10 ten cases.
+    Texas shows up again repeatedly for the top ten counties with
+    deaths, especially Loving. Loving probably shows up in both because
+    it’s population is so small any cases and deaths have carry a bigger
+    percentage of the population then other counties.
+-   Between both cases, the largest population is 75,690 in Hancock, VA.
+    The majority of the other places are under 20K and all of them are
+    under 100K, these are all relatively small places
+-   When did these “largest values” occur?
+    -   Loving, Texas shows up in both the cases and deaths set as an
+        outlier.
 
-## Self-directed EDA
+## Self-directed EDA {#self-directed-eda}
 
 <!-- ------------------------- -->
 
 ### **q8** Drive your own ship: You’ve just put together a very rich dataset; you now get to explore! Pick your own direction and generate at least one punchline figure to document an interesting finding. I give a couple tips & ideas below:
 
-### Ideas
+### Ideas {#ideas}
 
 <!-- ------------------------- -->
 
-- Look for outliers.
-- Try web searching for news stories in some of the outlier counties.
-- Investigate relationships between county population and counts.
-- Do a deep-dive on counties that are important to you (e.g. where you
-  or your family live).
-- Fix the *geographic exceptions* noted below to study New York City.
-- Your own idea!
+-   Look for outliers.
+-   Try web searching for news stories in some of the outlier counties.
+-   Investigate relationships between county population and counts.
+-   Do a deep-dive on counties that are important to you (e.g. where you
+    or your family live).
+-   Fix the *geographic exceptions* noted below to study New York City.
+-   Your own idea!
 
 **DO YOUR OWN ANALYSIS HERE**
 
-### Aside: Some visualization tricks
+### Aside: Some visualization tricks {#aside-some-visualization-tricks}
 
 ``` r
 #histogram to understand population range
@@ -735,18 +795,18 @@ Massachusetts.
 
 *Tricks*:
 
-- I use `fct_reorder2` to *re-order* the color labels such that the
-  color in the legend on the right is ordered the same as the vertical
-  order of rightmost points on the curves. This makes it easier to
-  reference the legend.
-- I manually set the `name` of the color scale in order to avoid
-  reporting the `fct_reorder2` call.
-- I use `scales::label_number_si` to make the vertical labels more
-  readable.
-- I use `theme_minimal()` to clean up the theme a bit.
-- I use `labs()` to give manual labels.
+-   I use `fct_reorder2` to *re-order* the color labels such that the
+    color in the legend on the right is ordered the same as the vertical
+    order of rightmost points on the curves. This makes it easier to
+    reference the legend.
+-   I manually set the `name` of the color scale in order to avoid
+    reporting the `fct_reorder2` call.
+-   I use `scales::label_number_si` to make the vertical labels more
+    readable.
+-   I use `theme_minimal()` to clean up the theme a bit.
+-   I use `labs()` to give manual labels.
 
-### Geographic exceptions
+### Geographic exceptions {#geographic-exceptions}
 
 <!-- ------------------------- -->
 
@@ -758,23 +818,23 @@ normalized counts in `df_normalized` are `NA`. To fix this, you would
 need to merge the population data from the New York City counties, and
 manually normalize the data.
 
-# Notes
+# Notes {#notes}
 
 Worked with Elisa
 
 <!-- -------------------------------------------------- -->
 
-\[1\] The census used to have many, many questions, but the ACS was
+$$1$$ The census used to have many, many questions, but the ACS was
 created in 2010 to remove some questions and shorten the census. You can
 learn more in [this wonderful visual
 history](https://pudding.cool/2020/03/census-history/) of the census.
 
-\[2\] FIPS stands for [Federal Information Processing
+$$2$$ FIPS stands for [Federal Information Processing
 Standards](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standards);
 these are computer standards issued by NIST for things such as
 government data.
 
-\[3\] Demographers often report statistics not in percentages (per 100
+$$3$$ Demographers often report statistics not in percentages (per 100
 people), but rather in per 100,000 persons. This is [not always the
 case](https://stats.stackexchange.com/questions/12810/why-do-demographers-give-rates-per-100-000-people)
 though!
