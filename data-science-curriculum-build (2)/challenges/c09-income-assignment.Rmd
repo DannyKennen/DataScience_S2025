@@ -224,7 +224,7 @@ One last wrangling step: We need to join the two datasets so we can compare popu
 
 ```{r q5-task}
 ## TODO: Join df_q4 and df_pop by the appropriate column
-df_data <- merge(df_q4, df_pop, by = "Geography", all = FALSE)
+df_data <- left_join(df_q4, df_pop, by = "Geography")
 
 ```
 
@@ -282,14 +282,13 @@ df_data %>%
   ggplot(aes(x = population_estimate, y = income_SE, color = category)) +
   geom_point(alpha = 0.7, size = 3) +
   geom_smooth(method = "loess", se = FALSE, color = "black", linetype = "dashed") +
-  scale_x_continuous(labels = scales::comma) +
+  scale_x_log10() +
   labs(
     title = "Standard Error of Median Income vs. Population",
     x = "Population",
-    y = "Standard Error of Median Household Income",
+    y = "Standard Error of Median Household Income (log scale)",
     color = "Category"
-  ) +
-  theme_minimal()
+  )
 
 ```
 
@@ -331,7 +330,7 @@ df_data %>%
 
 **Observations**:
 
--   The spread of rural median incomes is much wider then urban median incomes. However, the average of urban incomes is slightly higher then that of rural incomes.
+-   The spread of rural median incomes is much wider then urban median incomes, specifically there are more outliers that reach further. The IQR of both rural and urban incomes seems to have relatively the same amount of incomes covered, however the median of urban incomes is slightly higher then that of rural incomes.
 
 Ideas:
 
