@@ -1,7 +1,7 @@
 ---
 title: "Getting Started: Diamonds"
 author: "Danny"
-date: 02/06/2025
+date: 2025-04-28
 output:
   github_document:
     toc: true
@@ -60,7 +60,7 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 ```{r q1-task}
 ## TASK: Plot `price` vs `carat` below
 diamonds %>%
-  ggplot()+
+  ggplot() +
   geom_point(
     mapping = aes( 
       x = carat,

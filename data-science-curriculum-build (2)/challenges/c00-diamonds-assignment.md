@@ -1,7 +1,7 @@
 Getting Started: Diamonds
 ================
 Danny
-02/06/2025
+2025-04-28
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -98,7 +98,7 @@ document your observations.
 ``` r
 ## TASK: Plot `price` vs `carat` below
 diamonds %>%
-  ggplot()+
+  ggplot() +
   geom_point(
     mapping = aes( 
       x = carat,
@@ -166,7 +166,8 @@ a preview window so you can view your knitted document.
 
 <figure>
 <img src="./images/c00-unstaged.png" alt="Terminal" />
-<figcaption aria-hidden="true">Terminal</figcaption>
+<figcaption aria-hidden="true"><img
+src="images/clipboard-1486334410.png" />Terminal</figcaption>
 </figure>
 
 You will need to stage both the `.md` file, as well as the `_files`
