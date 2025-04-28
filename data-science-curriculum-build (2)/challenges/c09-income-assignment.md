@@ -1,9 +1,40 @@
 US Income
 ================
 Danny Kennen
-2025-04-06
+2025-04-27
 
-------------------------------------------------------------------------
+- [Grading Rubric](#grading-rubric)
+  - [Individual](#individual)
+  - [Submission](#submission)
+- [Setup](#setup)
+  - [**q1** Load the population data from c06; simply replace
+    `filename_pop`
+    below.](#q1-load-the-population-data-from-c06-simply-replace-filename_pop-below)
+  - [**q2** Obtain median income data from the Census
+    Bureau:](#q2-obtain-median-income-data-from-the-census-bureau)
+  - [**q3** Tidy the `df_income` dataset by completing the code below.
+    Pivot and rename the columns to arrive at the column names
+    `id, geographic_area_name, category, income_estimate, income_moe`.](#q3-tidy-the-df_income-dataset-by-completing-the-code-below-pivot-and-rename-the-columns-to-arrive-at-the-column-names-id-geographic_area_name-category-income_estimate-income_moe)
+  - [**q4** Convert the margin of error to standard error. Additionally,
+    compute a 99% confidence interval on income, and normalize the
+    standard error to `income_CV = income_SE / income_estimate`. Provide
+    these columns with the names
+    `income_SE, income_lo, income_hi, income_CV`.](#q4-convert-the-margin-of-error-to-standard-error-additionally-compute-a-99-confidence-interval-on-income-and-normalize-the-standard-error-to-income_cv--income_se--income_estimate-provide-these-columns-with-the-names-income_se-income_lo-income_hi-income_cv)
+  - [**q5** Join `df_q4` and `df_pop`.](#q5-join-df_q4-and-df_pop)
+- [Analysis](#analysis)
+  - [**q6** Study the following graph, making sure to note what you can
+    *and can’t* conclude based on the estimates and confidence
+    intervals. Document your observations below and answer the
+    questions.](#q6-study-the-following-graph-making-sure-to-note-what-you-can-and-cant-conclude-based-on-the-estimates-and-confidence-intervals-document-your-observations-below-and-answer-the-questions)
+  - [**q7** Plot the standard error against population for all counties.
+    Create a visual that effectively highlights the trends in the data.
+    Answer the questions under *observations*
+    below.](#q7-plot-the-standard-error-against-population-for-all-counties-create-a-visual-that-effectively-highlights-the-trends-in-the-data-answer-the-questions-under-observations-below)
+- [Going Further](#going-further)
+  - [**q8** Pose your own question about the data. Create a
+    visualization (or table) here, and document your
+    observations.](#q8-pose-your-own-question-about-the-data-create-a-visualization-or-table-here-and-document-your-observations)
+- [References](#references)
 
 *Purpose*: We’ve been learning how to quantify uncertainty in estimates
 through the exercises; now its time to put those skills to use studying
@@ -57,6 +88,17 @@ all files uploaded to GitHub.**
 library(tidyverse)
 ```
 
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+    ## ✔ purrr     1.0.2     
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
 ### **q1** Load the population data from c06; simply replace `filename_pop` below.
 
 ``` r
@@ -77,10 +119,11 @@ df_pop <-
     ## New names:
     ## Rows: 3220 Columns: 5
     ## ── Column specification
-    ## ──────────────────────────────────────────────────────────────────────────────────────────────── Delimiter: "," chr
-    ## (3): Geography, Geographic Area Name, Margin of Error!!Total dbl (1): Estimate!!Total lgl (1): ...5
-    ## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ Specify the column types or set
-    ## `show_col_types = FALSE` to quiet this message.
+    ## ──────────────────────────────────────────────────────── Delimiter: "," chr
+    ## (3): Geography, Geographic Area Name, Margin of Error!!Total dbl (1):
+    ## Estimate!!Total lgl (1): ...5
+    ## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+    ## Specify the column types or set `show_col_types = FALSE` to quiet this message.
     ## • `` -> `...5`
 
 ``` r
@@ -88,19 +131,21 @@ df_pop
 ```
 
     ## # A tibble: 3,220 × 5
-    ##    Geography      `Geographic Area Name`   population_estimate `Margin of Error!!Total` ...5 
-    ##    <chr>          <chr>                                  <dbl> <chr>                    <lgl>
-    ##  1 0500000US01001 Autauga County, Alabama                55200 *****                    NA   
-    ##  2 0500000US01003 Baldwin County, Alabama               208107 *****                    NA   
-    ##  3 0500000US01005 Barbour County, Alabama                25782 *****                    NA   
-    ##  4 0500000US01007 Bibb County, Alabama                   22527 *****                    NA   
-    ##  5 0500000US01009 Blount County, Alabama                 57645 *****                    NA   
-    ##  6 0500000US01011 Bullock County, Alabama                10352 *****                    NA   
-    ##  7 0500000US01013 Butler County, Alabama                 20025 *****                    NA   
-    ##  8 0500000US01015 Calhoun County, Alabama               115098 *****                    NA   
-    ##  9 0500000US01017 Chambers County, Alabama               33826 *****                    NA   
-    ## 10 0500000US01019 Cherokee County, Alabama               25853 *****                    NA   
+    ##    Geography   `Geographic Area Name` population_estimate Margin of Error!!Tot…¹
+    ##    <chr>       <chr>                                <dbl> <chr>                 
+    ##  1 0500000US0… Autauga County, Alaba…               55200 *****                 
+    ##  2 0500000US0… Baldwin County, Alaba…              208107 *****                 
+    ##  3 0500000US0… Barbour County, Alaba…               25782 *****                 
+    ##  4 0500000US0… Bibb County, Alabama                 22527 *****                 
+    ##  5 0500000US0… Blount County, Alabama               57645 *****                 
+    ##  6 0500000US0… Bullock County, Alaba…               10352 *****                 
+    ##  7 0500000US0… Butler County, Alabama               20025 *****                 
+    ##  8 0500000US0… Calhoun County, Alaba…              115098 *****                 
+    ##  9 0500000US0… Chambers County, Alab…               33826 *****                 
+    ## 10 0500000US0… Cherokee County, Alab…               25853 *****                 
     ## # ℹ 3,210 more rows
+    ## # ℹ abbreviated name: ¹​`Margin of Error!!Total`
+    ## # ℹ 1 more variable: ...5 <lgl>
 
 You might wonder why the `Margin of Error` in the population estimates
 is listed as `*****`. From the [documentation (PDF
@@ -136,15 +181,16 @@ df_income <-
     ## New names:
     ## • `` -> `...243`
 
-    ## Warning: One or more parsing issues, call `problems()` on your data frame for details, e.g.:
+    ## Warning: One or more parsing issues, call `problems()` on your data frame for details,
+    ## e.g.:
     ##   dat <- vroom(...)
     ##   problems(dat)
 
     ## Rows: 3220 Columns: 243
-    ## ── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────
+    ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## chr  (66): Geography, Geographic Area Name, Estimate!!Median income (dollars)!!HOUSEHOLD INCOME BY RACE AND HISPANIC...
-    ## dbl (176): Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households, Marg...
+    ## chr  (66): Geography, Geographic Area Name, Estimate!!Median income (dollars...
+    ## dbl (176): Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO...
     ## lgl   (1): ...243
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
@@ -155,24 +201,24 @@ df_income
 ```
 
     ## # A tibble: 3,220 × 243
-    ##    Geography      `Geographic Area Name`   Estimate!!Number!!HOUSEHOLD I…¹ Margin of Error!!Num…² Estimate!!Number!!HO…³
-    ##    <chr>          <chr>                                              <dbl>                  <dbl>                  <dbl>
-    ##  1 0500000US01001 Autauga County, Alabama                            21115                    383                  16585
-    ##  2 0500000US01003 Baldwin County, Alabama                            78622                   1183                  69544
-    ##  3 0500000US01005 Barbour County, Alabama                             9186                    280                   4729
-    ##  4 0500000US01007 Bibb County, Alabama                                6840                    321                   5588
-    ##  5 0500000US01009 Blount County, Alabama                             20600                    396                  20054
-    ##  6 0500000US01011 Bullock County, Alabama                             3609                    196                    881
-    ##  7 0500000US01013 Butler County, Alabama                              6708                    274                   3821
-    ##  8 0500000US01015 Calhoun County, Alabama                            45033                    683                  33820
-    ##  9 0500000US01017 Chambers County, Alabama                           13516                    372                   7953
-    ## 10 0500000US01019 Cherokee County, Alabama                           10606                    370                   9953
+    ##    Geography      `Geographic Area Name`   Estimate!!Number!!HOUSEHOLD INCOME …¹
+    ##    <chr>          <chr>                                                    <dbl>
+    ##  1 0500000US01001 Autauga County, Alabama                                  21115
+    ##  2 0500000US01003 Baldwin County, Alabama                                  78622
+    ##  3 0500000US01005 Barbour County, Alabama                                   9186
+    ##  4 0500000US01007 Bibb County, Alabama                                      6840
+    ##  5 0500000US01009 Blount County, Alabama                                   20600
+    ##  6 0500000US01011 Bullock County, Alabama                                   3609
+    ##  7 0500000US01013 Butler County, Alabama                                    6708
+    ##  8 0500000US01015 Calhoun County, Alabama                                  45033
+    ##  9 0500000US01017 Chambers County, Alabama                                 13516
+    ## 10 0500000US01019 Cherokee County, Alabama                                 10606
     ## # ℹ 3,210 more rows
-    ## # ℹ abbreviated names:
-    ## #   ¹​`Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households`,
-    ## #   ²​`Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households`,
-    ## #   ³​`Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!White`
-    ## # ℹ 238 more variables:
+    ## # ℹ abbreviated name:
+    ## #   ¹​`Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households`
+    ## # ℹ 240 more variables:
+    ## #   `Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households` <dbl>,
+    ## #   `Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!White` <dbl>,
     ## #   `Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!White` <dbl>, …
 
 Use the following test to check that you downloaded the correct file:
@@ -230,11 +276,11 @@ df_q3 <-
 
     ## Rows: 19,320
     ## Columns: 5
-    ## $ Geography            <chr> "0500000US01001", "0500000US01001", "0500000US01001", "0500000US01001", "0500000US01001",…
-    ## $ geographic_area_name <chr> "Autauga County, Alabama", "Autauga County, Alabama", "Autauga County, Alabama", "Autauga…
-    ## $ category             <chr> "2-person families", "3-person families", "4-person families", "5-person families", "6-pe…
-    ## $ income_estimate      <dbl> 64947, 80172, 85455, 88601, 103787, 135083, 63975, 79390, 88458, 91259, 69609, 107838, 45…
-    ## $ income_moe           <dbl> 6663, 14181, 10692, 20739, 12387, 73304, 2297, 8851, 5199, 7011, 23175, 69994, 5713, 1104…
+    ## $ Geography            <chr> "0500000US01001", "0500000US01001", "0500000US010…
+    ## $ geographic_area_name <chr> "Autauga County, Alabama", "Autauga County, Alaba…
+    ## $ category             <chr> "2-person families", "3-person families", "4-pers…
+    ## $ income_estimate      <dbl> 64947, 80172, 85455, 88601, 103787, 135083, 63975…
+    ## $ income_moe           <dbl> 6663, 14181, 10692, 20739, 12387, 73304, 2297, 88…
 
 Use the following tests to check your work:
 
@@ -287,15 +333,15 @@ glimpse(df_q4)
 
     ## Rows: 19,320
     ## Columns: 9
-    ## $ Geography            <chr> "0500000US01001", "0500000US01001", "0500000US01001", "0500000US01001", "0500000US01001",…
-    ## $ geographic_area_name <chr> "Autauga County, Alabama", "Autauga County, Alabama", "Autauga County, Alabama", "Autauga…
-    ## $ category             <chr> "2-person families", "3-person families", "4-person families", "5-person families", "6-pe…
-    ## $ income_estimate      <dbl> 64947, 80172, 85455, 88601, 103787, 135083, 63975, 79390, 88458, 91259, 69609, 107838, 45…
-    ## $ income_moe           <dbl> 6663, 14181, 10692, 20739, 12387, 73304, 2297, 8851, 5199, 7011, 23175, 69994, 5713, 1104…
-    ## $ income_SE            <dbl> 4050.456, 8620.669, 6499.696, 12607.295, 7530.091, 44561.702, 1396.353, 5380.547, 3160.48…
-    ## $ income_lo            <dbl> 54513.026, 57965.157, 68711.783, 56124.609, 84389.485, 20292.055, 60377.996, 65529.711, 8…
-    ## $ income_hi            <dbl> 75380.97, 102378.84, 102198.22, 121077.39, 123184.51, 249873.94, 67572.00, 93250.29, 9659…
-    ## $ income_CV            <dbl> 0.06236556, 0.10752718, 0.07605987, 0.14229292, 0.07255332, 0.32988386, 0.02182654, 0.067…
+    ## $ Geography            <chr> "0500000US01001", "0500000US01001", "0500000US010…
+    ## $ geographic_area_name <chr> "Autauga County, Alabama", "Autauga County, Alaba…
+    ## $ category             <chr> "2-person families", "3-person families", "4-pers…
+    ## $ income_estimate      <dbl> 64947, 80172, 85455, 88601, 103787, 135083, 63975…
+    ## $ income_moe           <dbl> 6663, 14181, 10692, 20739, 12387, 73304, 2297, 88…
+    ## $ income_SE            <dbl> 4050.456, 8620.669, 6499.696, 12607.295, 7530.091…
+    ## $ income_lo            <dbl> 54513.026, 57965.157, 68711.783, 56124.609, 84389…
+    ## $ income_hi            <dbl> 75380.97, 102378.84, 102198.22, 121077.39, 123184…
+    ## $ income_CV            <dbl> 0.06236556, 0.10752718, 0.07605987, 0.14229292, 0…
 
 Use the following tests to check your work:
 
@@ -371,7 +417,7 @@ compare population with income.
 
 ``` r
 ## TODO: Join df_q4 and df_pop by the appropriate column
-df_data <- merge(df_q4, df_pop, by = "Geography", all = FALSE)
+df_data <- left_join(df_q4, df_pop, by = "Geography")
 ```
 
 # Analysis
@@ -416,7 +462,8 @@ df_data %>%
     ## ℹ Use `.na_rm = TRUE` to silence this message.
     ## ℹ Use `.na_rm = FALSE` to preserve NAs.
 
-    ## Warning: Removed 4 rows containing missing values or values outside the scale range (`geom_point()`).
+    ## Warning: Removed 4 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
 
 ![](c09-income-assignment_files/figure-gfm/q6-task-1.png)<!-- -->
 
@@ -456,21 +503,22 @@ df_data %>%
   ggplot(aes(x = population_estimate, y = income_SE, color = category)) +
   geom_point(alpha = 0.7, size = 3) +
   geom_smooth(method = "loess", se = FALSE, color = "black", linetype = "dashed") +
-  scale_x_continuous(labels = scales::comma) +
+  scale_x_log10() +
   labs(
     title = "Standard Error of Median Income vs. Population",
     x = "Population",
-    y = "Standard Error of Median Household Income",
+    y = "Standard Error of Median Household Income (log scale)",
     color = "Category"
-  ) +
-  theme_minimal()
+  )
 ```
 
     ## `geom_smooth()` using formula = 'y ~ x'
 
-    ## Warning: Removed 1781 rows containing non-finite outside the scale range (`stat_smooth()`).
+    ## Warning: Removed 1781 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
 
-    ## Warning: Removed 1781 rows containing missing values or values outside the scale range (`geom_point()`).
+    ## Warning: Removed 1781 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
 
 ![](c09-income-assignment_files/figure-gfm/q7-task-1.png)<!-- -->
 
@@ -517,15 +565,18 @@ df_data %>%
   ) 
 ```
 
-    ## Warning: Removed 1781 rows containing non-finite outside the scale range (`stat_boxplot()`).
+    ## Warning: Removed 1781 rows containing non-finite outside the scale range
+    ## (`stat_boxplot()`).
 
 ![](c09-income-assignment_files/figure-gfm/q8-task-1.png)<!-- -->
 
 **Observations**:
 
 - The spread of rural median incomes is much wider then urban median
-  incomes. However, the average of urban incomes is slightly higher then
-  that of rural incomes.
+  incomes, specifically there are more outliers that reach further. The
+  IQR of both rural and urban incomes seems to have relatively the same
+  amount of incomes covered, however the median of urban incomes is
+  slightly higher then that of rural incomes.
 
 Ideas:
 
