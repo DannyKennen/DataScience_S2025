@@ -92,7 +92,7 @@ library(tidyverse)
 ``` r
 library(rsample)
 
-filename_random <- "./data/helvig-random-plzwork(Sheet1).csv"
+filename_random <- "./data/helvig-random_attempt2 - Sheet1 (1).csv"
 ```
 
 ### **q1** Orientation
@@ -130,8 +130,9 @@ you still need to count, because your numbers *will* be different!
   - 96.71%
 - Are there any sources of *real* uncertainty in the percent occupied
   you calculated?
-  - No, there is a defined and whole number amount of houses and a whole
-    number of those houses are unoccupied.
+  - Yes, islanders can move houses, die, and give birth, so the
+    percentage of occupied homes will change an indeterminte amount over
+    an undetermined time frame.
 - Are there any sources of *erroneous* uncertainty in the percent
   occupied you calculated?
   - I may have miscounted the number of unoccupied houses, I might have
@@ -266,7 +267,7 @@ Complete the code below to draw a sample of size `n=25`. Replace
 ## TASK: Set the parameters for this code block
 
 ## Select a random sample of houses
-n_houses <- nrow(df_sample_seq) # Total number of houses
+n_houses <- 547 # Total number of houses
 n_sample <- 25 # Desired sample size
 
 set.seed(101)   # Set a seed for reproducibility
@@ -287,7 +288,8 @@ df_numbers_random %>%
   pull(house)
 ```
 
-    ##  [1]  3  6  9 12 14 17 26 31 32 33 34 35 40 46 47 50 53 54 55 57 59 60 61 62 63
+    ##  [1]  14  95  97 117 131 192 204 209 240 244 246 298 315 316 351 352 355 430 442
+    ## [20] 454 474 483 504 521 546
 
 Use the following code to check your results.
 
@@ -313,7 +315,7 @@ variable `filename_random`. Answer the questions below.
 filename_random
 ```
 
-    ## [1] "./data/helvig-random-plzwork(Sheet1).csv"
+    ## [1] "./data/helvig-random_attempt2 - Sheet1 (1).csv"
 
 Note that this points to the `data/` subdirectory in your `challenges`
 folder.
@@ -326,7 +328,7 @@ df_sample_random <-
   read_csv(filename_random)
 ```
 
-    ## Rows: 51 Columns: 3
+    ## Rows: 52 Columns: 3
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr (1): name
@@ -334,6 +336,25 @@ df_sample_random <-
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+df_sample_random
+```
+
+    ## # A tibble: 52 × 3
+    ##    house   age name            
+    ##    <dbl> <dbl> <chr>           
+    ##  1    14    49 Jonas Eklund    
+    ##  2    14    48 Katharina Eklund
+    ##  3    95    26 Bailey Raske    
+    ##  4    95    25 Torvald Blomgren
+    ##  5    95     2 Jackson Raske   
+    ##  6    97    43 Marcus Collins  
+    ##  7    97    42 Brigit Sorensen 
+    ##  8   117    48 Nico Lund       
+    ##  9   117    48 Abby Collins    
+    ## 10   131    49 Dane Thorn      
+    ## # ℹ 42 more rows
 
 Use the following to check your work.
 
@@ -359,7 +380,7 @@ numVsamp <-
   pull(house)
 assertthat::assert_that(
   length(numVsamp) == 0,
-  msg = str_c("You are missing the houses: ", numVsamp)
+  msg = str_c("You are missing the houses: ", str_c(numVsamp, collapse = ", "))
 )
 ```
 
@@ -392,12 +413,12 @@ print("Great work!")
 - Which sample—sequential or random—is more *representative* of all
   homes Helvig? Why?
   - The random sample is more representative
-  - While the number of households doen’t change, the location of them
-    does. By taking houses from a greater population sample of the town
-    we have information from houses that are spread apart from each
-    other. Houses that are close together are more likely to have the
-    same last name because they are more likely to be related to each
-    other, but when the houses are further away from each other the
+  - By taking houses from a greater population sample of the town we
+    have information from houses that are spread apart from each other.
+    Houses that are close together are more likely to have the same last
+    name because they are more likely to be related to each other.
+    Additionally, families with similar incomes tend to live near
+    eachother. But when the houses are further away from each other the
     individuals in households are less likely to be related to the next
     household in the sequence so we get a more accurate representation
     of the last names in Helvig.
@@ -417,20 +438,20 @@ df_sample_random %>%
   mutate(p = n / sum(n))
 ```
 
-    ## # A tibble: 24 × 3
+    ## # A tibble: 27 × 3
     ##    last         n      p
     ##    <chr>    <int>  <dbl>
-    ##  1 Carlsen     10 0.196 
-    ##  2 Solberg      6 0.118 
-    ##  3 Eklund       5 0.0980
-    ##  4 Sorensen     4 0.0784
-    ##  5 Thorn        4 0.0784
-    ##  6 Banerjee     2 0.0392
-    ##  7 Blomgren     2 0.0392
-    ##  8 Ibsen        2 0.0392
-    ##  9 Achari       1 0.0196
-    ## 10 Connolly     1 0.0196
-    ## # ℹ 14 more rows
+    ##  1 Collins      6 0.115 
+    ##  2 Morris       4 0.0769
+    ##  3 Solberg      3 0.0577
+    ##  4 Sorensen     3 0.0577
+    ##  5 Burke        2 0.0385
+    ##  6 Carlsen      2 0.0385
+    ##  7 Edwards      2 0.0385
+    ##  8 Eklund       2 0.0385
+    ##  9 Hall         2 0.0385
+    ## 10 Jones        2 0.0385
+    ## # ℹ 17 more rows
 
 *Observations*
 
@@ -571,7 +592,7 @@ df_interval_bootstrap
     ## # A tibble: 1 × 6
     ##   term       .lower .estimate .upper .alpha .method   
     ##   <chr>       <dbl>     <dbl>  <dbl>  <dbl> <chr>     
-    ## 1 prevalence 0.0980     0.193  0.314   0.05 percentile
+    ## 1 prevalence      0    0.0387    0.1   0.05 percentile
 
 **Observations**:
 
