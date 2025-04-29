@@ -276,10 +276,10 @@ assertthat::assert_that(
 ``` r
 # Check the value for points *outside* the circle
 assertthat::assert_that(
-  tibble(x = 0.7, y = 0.7) %>% 
+  tibble(x = 0.75, y = 0.75) %>% 
     mutate(stat = stat(x, y)) %>% 
     pull(stat) %>% 
-    .[[1]] == 4,
+    .[[1]] == 0,
   msg = "Incorrect value when a point is outside the circle"
 )
 ```
@@ -296,15 +296,12 @@ print("Your assertions passed, but make sure they're checking the right thing!")
 
 - You chose a correct value of `stat(x, y)` when `x, y` is *outside* the
   circle. Why did you choose this value?
-  - I initially went with (1, 1) for values because I was only looking
-    at the circle, but when I finally remembered the stat function I
-    made I realized that the result needed to be under or equal to 1 so
-    I found a number that work under that condition which ended up being
-    (0.7, 0.7)
+  - I chose 0 because the points outside of the circle shouldn’t be part
+    of our estimate to Pi
 - You chose a correct value of `stat(x, y)` when `x, y` is *inside* the
   circle. Why did you choose this value?
-  - (0.65, 0.65) is as close as I could get (within 0.05) to being
-    outside of the circle while being under it.
+  - We are working with a quarter circle which is 1/4 Pi, to get a full
+    Pi we want to scale by 4
 
 ### **q3** Estimate $\pi$
 
@@ -314,13 +311,13 @@ Using your data in `df_q1`, estimate $\pi$.
 ## TASK: Estimate pi using your data from q1
 df_q3 <- 
   df_q1 %>% 
-  mutate(in_circle = (x^2 + y^2 <= 1)) %>%
-  summarize(pi_est = 4 * mean(in_circle))
+  mutate(stat = (x^2 + y^2 <= 1)) %>%
+  summarize(pi_est = 4 * mean(stat))
 df_q3
 ```
 
     ##   pi_est
-    ## 1  3.116
+    ## 1  3.092
 
 Use the following to check that you’ve used the correct variable names.
 (NB. This does not check correctness.)
@@ -371,14 +368,14 @@ estimate. Answer the questions below.
 ## TASK: Finish the code below
 df_q4 <- 
   df_q1 %>% 
-  mutate(in_circle = (x^2 + y^2 <= 1)) %>%
+  mutate(stat = (x^2 + y^2 <= 1)) %>%
   bootstraps(times = 1000) %>% 
   mutate(
     pi_est = map_dbl(
       splits,
       function(split_df) {
         analysis(split_df) %>% 
-          summarize(pi_est = 4 * mean(in_circle)) %>%
+          summarize(pi_est = 4 * mean(stat)) %>%
           pull(pi_est)
       }
     )
@@ -398,9 +395,10 @@ df_q4 %>%
 
 - What is a range of plausible values, based on the sampling
   distribution you’ve generated?
-  - Between 3.1 and 3.2 is where I would say the majority of pi
+  - Between 3.0 and 3.2 is where I would say the majority of pi
     estimates are from a purely visual observation. The pi estimate we
-    found earlier is firmly within this range.
+    found earlier is firmly within this range, arroud 3.1 right in the
+    middle.
 
 ### **q5** Bootstrap percentile confidence interval
 
@@ -425,7 +423,7 @@ df_q5
     ## # A tibble: 1 × 2
     ##   pi_lo pi_up
     ##   <dbl> <dbl>
-    ## 1  3.02  3.22
+    ## 1  2.99  3.19
 
 ### **q6** CLT confidence interval
 
@@ -442,19 +440,27 @@ done something *wrong* in one of the tasks….
 
 ``` r
 df_q6 <- df_q1 %>%
+  mutate(stat = (x^2 + y^2 <= 1)) %>%
   summarize(
-    p_hat = mean(x^2 + y^2 <= 1),
+    p_hat = mean(stat),
     pi_hat = 4 * p_hat,
-    se = 4 * sqrt(p_hat * (1 - p_hat) / nrow(df_q1)),
+    sd = sd(stat),
+    n = n(),
+    se = sd / sqrt(n),
     pi_lo = pi_hat - qnorm(0.975) * se,
     pi_up = pi_hat + qnorm(0.975) * se
   ) %>%
   select(pi_lo, pi_up)
+
 df_q6
 ```
 
     ##      pi_lo    pi_up
-    ## 1 3.013134 3.218866
+    ## 1 3.066024 3.117976
+
+``` r
+  #se = 4 * sqrt(p_hat * (1 - p_hat) / nrow(df_q1)),
+```
 
 **Observations**:
 
@@ -462,11 +468,11 @@ df_q6
   - (Bootstrap CI: yes or no?) Yes
   - (CLT CI: yes or no?) Yes
 - How closely do your bootstrap CI and CLT CI agree?
-  - They are pretty close together, the CLT CI values are slightly
-    higher then the bootstrap CI values but they are off by a value of
-    0.01 and have a very similar range of numbers , including the actual
-    value of pi being relatively in the center of the low and high
-    values.
+  - They are pretty close together but the CLT CI values have a wider
+    range then the bootstrap CI. The bootstrap CI has a smaller range
+    and the upper value for pi is very close to Pi’s actual value
+    (within 0.001), where as the CTL CI surpasses Pi by 0.1 which is a
+    pretty big difference.
 - Comment on the width of your CI(s). Would your estimate of $\pi$ be
   good enough for roughly estimating an area (e.g., to buy enough paint
   for an art project)? Would your estimate of $\pi$ be good enough for
@@ -483,10 +489,9 @@ df_q6
     decent estimate but it it still diverges from the actual pi value as
     the second decimal point.
 - What would be a *valid* way to make your CI more narrow?
-  - Adding more n values would potentially give us a closer estimate,
-    also identifying the closest possible values for being in the circle
-    and out of the circle would help bring us closer to the actual
-    values of pi.
+  - Adding more n values would potentially give us a closer estimate, a
+    larger sample size will decrease SE so the confidence interval gets
+    smaller
 
 # References
 
