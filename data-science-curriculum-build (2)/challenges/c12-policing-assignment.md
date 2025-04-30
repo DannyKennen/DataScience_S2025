@@ -234,10 +234,12 @@ df_data %>%
 **Observations**:
 
 - What are the unique values for `subject_race`?
-  - other and unknown
+  - white, black, hispanic, asian/pacific islander, other, NA, and
+    unknown
 - What are the unique values for `raw_Race`?
-  - Middle Eastern or East Indian (South Asian), American Indian or
-    Alaskan Native, None - for no operator present citations only, and A
+  - White, Hispanic, Black, Middle Eastern or East Indian (South Asian),
+    American Indian or Alaskan Native, None - for no operator present
+    citations only, NA, and A
 - What is the overlap between the two sets?
   - They both account for White, Hispanic, Black, and Asian/Pacific
     Islanders in their categories
@@ -286,7 +288,7 @@ which is most plausible, based on your results?
 
 - <div>
 
-  ## Vis
+  ## Visuals
 
   </div>
 
@@ -297,49 +299,40 @@ which is most plausible, based on your results?
 (Note: Create as many chunks and visuals as you need)
 
 ``` r
-ggplot(df_data, aes(x = subject_age, fill = arrest_made)) +
-  geom_bar(position = "stack") +
-  scale_y_log10() +
-  ylab("Proportion Arrested (Log Scaled)") +
-  xlab("Age Ranges") +
-  ggtitle("Arrest Rate by Age Group") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+df_data %>%
+  filter(!is.na(arrest_made)) %>%
+  group_by(subject_age) %>%
+  summarize(arrest_rate = mean(arrest_made)) %>%
+  ggplot(aes(x = subject_age, y = arrest_rate)) +
+  geom_col() +
+  labs(title = "Arrest Rate by Race", y = "Arrest Rate")
 ```
 
-    ## Warning: Removed 158006 rows containing non-finite outside the scale range
-    ## (`stat_count()`).
+    ## Warning: Removed 1 row containing missing values or values outside the scale range
+    ## (`geom_col()`).
 
 ![](c12-policing-assignment_files/figure-gfm/q5%20age%20visual-1.png)<!-- -->
 
 ``` r
-ggplot(df_data, aes(x = subject_sex, fill = arrest_made)) +
-  geom_bar(position = "stack") +
-  scale_y_log10() +
-  ylab("Number of Subjects (Log Scaled)") +
-  xlab("Sex")
+df_data %>%
+  filter(!is.na(arrest_made)) %>%
+  group_by(subject_sex) %>%
+  summarize(arrest_rate = mean(arrest_made)) %>%
+  ggplot(aes(x = subject_sex, y = arrest_rate)) +
+  geom_col() +
+  labs(title = "Arrest Rate by Sex", y = "Arrest Rate")
 ```
 
 ![](c12-policing-assignment_files/figure-gfm/sex%20visual-1.png)<!-- -->
 
 ``` r
-  ggtitle("Arrest Rate by Sex")
-```
-
-    ## $title
-    ## [1] "Arrest Rate by Sex"
-    ## 
-    ## attr(,"class")
-    ## [1] "labels"
-
-``` r
-ggplot(df_data, aes(x = subject_race, fill = arrest_made)) +
-  geom_bar(position = "stack") +
-  scale_y_log10() +
-  ylab("Number of Subjects (log scale)") +
-  xlab("Race") +
-  ggtitle("Arrest Rate by Race") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+df_data %>%
+  filter(!is.na(arrest_made)) %>%
+  group_by(subject_race) %>%
+  summarize(arrest_rate = mean(arrest_made)) %>%
+  ggplot(aes(x = subject_race, y = arrest_rate)) +
+  geom_col() +
+  labs(title = "Arrest Rate by Race", y = "Arrest Rate")
 ```
 
 ![](c12-policing-assignment_files/figure-gfm/race%20visual-1.png)<!-- -->
@@ -347,9 +340,10 @@ ggplot(df_data, aes(x = subject_race, fill = arrest_made)) +
 **Observations**:
 
 - How does `arrest_rate` tend to vary with `subject_age`?
-  - While for every age range the majority of interactions don’t result
-    in arrests for any group, the ages right before 25 both appear the
-    most in this data set and have the highest arrest rates.
+  - There is a huge spike around 10 years old, which seems unrealistic
+    however there just may not be many 10 year olds in traffic stops and
+    all 10 year olds who are are detained because they are a minor so
+    that skews the data. There is another peak around age 25
   - A lot of the lines were removed, likely because they didn’t have a
     reported age and only showed up as “NA”  
     Additionally, there are just some gaps in the plot entirely, this
@@ -359,23 +353,13 @@ ggplot(df_data, aes(x = subject_race, fill = arrest_made)) +
 
 - How does `arrest_rate` tend to vary with `subject_sex`?
   - Males are more likely to be in this data set in the first place, and
-    so it makes sense that they have a higher arrest rate.
-    Interestingly, while the female category does have less arrests it
-    doesn’t seem proportional to the amount of female subjects are in
-    the data set. The number of female arrests are decently close to the
-    number of male arrests, but there is a pretty noticeable decrease
-    amount of females in this data set.
+    so it makes sense that they have a higher arrest rate. Females are
+    around50% less likely to be arrested then males.
 
 - How does `arrest_rate` tend to vary with `subject_race`?
-  - White shows up the most in the data set and also has the highest
-    rate of arrests, however, black, Hispanic, and Asian/pacific
-    islander shows up a lot too and has pretty high arrest rates. The
-    arrest rates are less then the white arrest rates but not
-    proportionally less. I would be interested to see the demographics
-    of MA when the data in this set was collected and see the
-    relationship between the amount of any particular race in all of
-    mass and the amount any particular race ends up in this data
-    set/gets arrested
+  - Hispanic has the highest arrest rates, followed by black, other, and
+    then white. Interesting considering that white has the largest count
+    in this dataset
 
 - <div>
 
@@ -498,8 +482,12 @@ fit_q7 %>% tidy()
     getting a warning or a ticket
 - Look at the set of variables in the dataset; do any of the columns
   relate to a potential explanation you listed?
-  - I am not entirely sure what the statistic columns correlates to, the
-    values are very confusing to me, but maybe that would correlate.
+  - If there is a location bias, such as more Hispanic people living in
+    one location, district could help us find that out
+  - Data about outcome could help us figure out if there is a bias
+    against Hispanics for arrests specifically or if all outcomes are
+    hightened
+  - search_conducted could indicate bias in search rates
 
 One way we can explain differential arrest rates is to include some
 measure indicating the presence of an arrestable offense. We’ll do this
